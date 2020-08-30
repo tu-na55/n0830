@@ -1,5 +1,7 @@
 <template lang="pug">
-v-container(grey lighten-4)
+v-container(fruid grey lighten-4)
+  v-toolbar(class="blue lighten-4")
+    v-toolbar-title 管理
 
   v-row
     v-col
@@ -26,15 +28,136 @@ v-container(grey lighten-4)
       //-   @click="find('完了')"
       //- ) 完了
 
+
+
+  v-row(justify="center" align="center")
+    v-col(cols="12" md="8")
+      v-card
+        v-select(
+          v-model="templateSelectModel"
+          :items="templateSelectItems"
+          label="テンプレート選択"
+        )
+
+        v-btn 追加
+        v-btn 削除
+
+        //- v-text-field
+        //-   v-model="taskModel"
+        //-   label="タスク名入力 + ENTER"
+        //-   solo
+        //-   @keydown.enter="create"
+        //- )
+        template(v-for="(task, i) in tasks")
+          v-divider(
+            v-if="i !== 0"
+              :key="`${i}-divider`"
+          )
+          v-list
+            v-list-item(:key="`${i}-${tasks.text}`")
+              v-list-item-action
+                v-checkbox(
+                  v-model="tasks.done"
+                  :color="tasks.done && 'grey' || 'red'"
+                )
+                  template(v-slot:label)
+                    div(
+                      :class="tasks.done && 'grey--text' || 'red--text'"
+                      class="ml-4"
+                      v-text="tasks.text"
+                    )
+
+      v-expansion-panels(accordion v-model="expandModel")
+        v-expansion-panel
+          v-expansion-panel-header {{ getExpandTitle }}
+          v-expansion-panel-content
+            v-card(class="blue lighten-4")
+              v-card-text
+                v-form(class="light black--text")
+                  v-textarea(label="To" outlined)
+                  v-textarea(label="CC" outlined)
+                  v-textarea(label="BCC" outlined)
+                  v-divider
+                  v-textarea(label="本文" outlined)
+
+                  v-spacer
+                  v-btn(
+                    class="primary"
+                    icons-and-text
+                  ) 送信
+                    template
+                      .font-awesome
+                        font-awesome-icon(class="fas fa-lg" icon="paper-plane")
+                  v-btn(class="accent") クリア
+
+                  v-list
+                    v-list-item
+                      v-list-item-action
+                        v-checkbox(v-model="approvalCheckboxModel")
+                      v-list-item-content
+                        v-list-item-title 承認
+
+                  v-list-item
+                      v-list-item-action
+                        v-checkbox(v-model="finishCheckboxModel")
+                      v-list-item-content
+                        v-list-item-title 送信済
+
+                  v-btn(rounded icons-and-text) タイムスタンプ
+                    template
+                      .font-awesome
+                        font-awesome-icon(class="fas fa-lg" icon="clock")
+
+
+  v-row(justify="center")
+      v-dialog(v-model="dialog2" persistent max-width="600px")
+        template(v-slot:activator="{ on, attrs }")
+          v-btn(
+            color="primary"
+            dark
+            v-bind="attrs"
+            v-on="on"
+          ) Open Dialog
+        v-card
+          v-card-title
+            span(class="headline") Profile
+          v-card-text
+            v-container
+              v-row
+                v-col(cols="12" sm="6" md="4")
+                  v-text-field(label="Legal first name*" required)
+                v-col(cols="12" sm="6" md="4")
+                  v-text-field(label="Legal middle name" hint="example of helper text only on focus")
+                v-col(cols="12" sm="6" md="4")
+                  v-text-field(
+                    label="Legal last name*"
+                    hint="example of persistent helper text"
+                    persistent-hint
+                    required
+                  )
+                v-col(cols="12")
+                  v-text-field(label="Email*" required)
+                v-col(cols="12")
+                  v-text-field(label="Password*" type="password" required)
+                v-col(cols="12" sm="6")
+                  v-select(
+                    :items="['0-17', '18-29', '30-54', '54+']"
+                    label="Age*"
+                    required
+                  )
+                v-col(cols="12" sm="6")
+                  v-autocomplete(
+                    :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
+                    label="Interests"
+                    multiple
+                  )
+          v-spacer
+          v-card-actions
+            v-btn(color="blue darken-1" text @click="dialog2 = false") Close
   v-row
     v-col
       v-card(class="mb-4")
-        v-card-text
-          v-select(
-            v-model="steps"
-            :items="[2, 3, 4, 5, 6]"
-            label="# of steps"
-          )
+
 
   v-row
     v-col
@@ -67,7 +190,7 @@ v-container(grey lighten-4)
               //- v-icon {{ item.icon }}
               template
                 .font-awesome
-                  font-awesome-icon.fa-lg( :icon="item.icon")
+                  font-awesome-icon.fa-lg(:icon="item.icon")
             v-list-item-content
               v-list-item-title(v-text="item.title")
       v-divider
@@ -225,7 +348,7 @@ v-container(grey lighten-4)
         v-list-item-subtitle ID: {{ reportControllID }}
         v-divider
         v-card
-          TimelineComp
+
     v-col(cols="6")
     v-card.pa-2
       h3 todo実装：websocket
@@ -248,18 +371,44 @@ v-container(grey lighten-4)
 
 <script lang="ts">
 // import { Component, Vue } from 'nuxt-property-decorator'
-import TimelineComp from '@/components/reportControll/TimlineComp.vue'
 
 import Vue from 'vue'
 export default Vue.extend({
   name: 'PageReportControll',
   layout: 'ReportLayout',
-  components: { TimelineComp },
+  components: {},
   // - LIVE: title
   data() {
     return {
+      // todo
+      taskModel: [],
+      tasks: [
+        {
+          done: false,
+          text: 'Foobar',
+        },
+        {
+          done: false,
+          text: 'Fizzbuzz',
+        },
+      ],
+      // stepper
       stepModel: 1,
       steps: 2,
+
+      // expand
+      expandModel: false,
+
+      // select
+      templateSelectModel: '新規',
+      templateSelectItems: ['新規', 'hoge', 'fuga'],
+
+      // check
+      approvalCheckboxModel: false,
+      finishCheckboxModel: false,
+
+      // dialog2
+      dialog2: false,
 
       sendMailButtonTitle: '送信',
       reportControllTitle: '（ここに表示される）',
@@ -271,19 +420,16 @@ export default Vue.extend({
           icon: 'check',
         },
         {
-          title: '送信メール編集用',
-          icon: 'check',
-        },
-        {
-          title: '送信メール編集用',
-          icon: 'check',
-        },
-        {
           title: 'LINK',
           icon: 'check',
         },
       ],
     }
+  },
+  computed: {
+    getExpandTitle(): String {
+      return this.expandModel ? 'メールを閉じる' : 'メールを開く'
+    },
   },
   watch: {
     steps(val) {
@@ -293,6 +439,15 @@ export default Vue.extend({
     },
   },
   methods: {
+    // create() {
+    //   this.tasks.push([{
+    //     done: false,
+    //     text: this.taskModel,
+    //   }])
+
+    //   this.taskModel = []
+    // },
+
     nextStep(n) {
       if (n === this.steps) {
         this.stepModel = 1

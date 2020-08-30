@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
+import ja from 'vuetify/src/locale/ja'
 // import ja from 'vuetify/es5/locale/ja.js'
 // import { library } from '@fortawesome/fontawesome-svg-core'
 // import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -11,10 +12,10 @@ import Vuetify from 'vuetify/lib'
 Vue.use(Vuetify)
 
 export default new Vuetify({
-  // lang: {
-  //   locales: [ja],
-  //   current: 'ja',
-  // },
+  lang: {
+    locales: [ja],
+    current: 'ja',
+  },
   // icons: {
   //   iconfont: 'faSvg',
   // },
